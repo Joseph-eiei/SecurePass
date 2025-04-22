@@ -9,11 +9,8 @@ const PORT = process.env.PORT || 3000;
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Redirect root to login page
-app.get('/', (req, res) => res.redirect('/login.html'));
-
 // Initialize SQLite database
-const db = new sqlite3.Database('./tmp/securepass.db', (err) => {
+const db = new sqlite3.Database('./securepass.db', (err) => {
   if (err) throw err;
   console.log(`[${new Date().toISOString()}] Database opened: securepass.db`);
 });

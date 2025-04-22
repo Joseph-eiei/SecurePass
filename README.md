@@ -23,4 +23,4 @@ It is developed as a project for Computer and Network Security (DES332) Sec. 1 a
    node server.js
    ```
 4. **Use the app**
-   Open your browser to `http://localhost:3000/signup.html` to create an account, then log in at `login.html` and manage your vault in `main.html`.
+   Open your browser to `http://localhost:3000/` to create an account, then log in at `login.html` and manage your vault in `main.html`.
