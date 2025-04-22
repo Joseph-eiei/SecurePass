@@ -1,4 +1,3 @@
 node_modules/
-securepass.db
 .env
 .DS_Store
