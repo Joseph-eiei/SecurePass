@@ -13,7 +13,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.get('/', (req, res) => res.redirect('/login.html'));
 
 // Initialize SQLite database
-const db = new sqlite3.Database('./securepass.db', (err) => {
+const db = new sqlite3.Database('./tmp/securepass.db', (err) => {
   if (err) throw err;
   console.log(`[${new Date().toISOString()}] Database opened: securepass.db`);
 });
