@@ -12,7 +12,7 @@ It is developed as a project for Computer and Network Security (DES332) Sec. 1 a
 ## How to Run
 1. **Clone repository**
     ```
-    git clone https://github.com/Joseph-eiei/SecurePass
+    git clone https://github.com/Joseph-eiei/SecurePass.git
     ```
 2. **Install dependencies**
    ```
