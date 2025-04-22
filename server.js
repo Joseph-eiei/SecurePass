@@ -25,6 +25,9 @@ db.serialize(() => {
   );
 });
 
+// Redirect root to login page
+app.get('/', (req, res) => res.redirect('/login.html'));
+
 // Signup endpoint
 app.post('/api/signup', async (req, res) => {
   const { username, password, encryptedVault } = req.body;
