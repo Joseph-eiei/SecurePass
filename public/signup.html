@@ -60,7 +60,7 @@
       if (p !== c) return errEl.textContent = 'Passwords do not match.';
       const key = CryptoJS.SHA256(p).toString();
       const emptyVault = CryptoJS.AES.encrypt(JSON.stringify({}), key).toString();
-      const res = await fetch('/api/signup', {
+      const res = await fetch('/signup', {
         method: 'POST', headers: {'Content-Type':'application/json'},
         body: JSON.stringify({ username: u, password: p, encryptedVault: emptyVault })
       });

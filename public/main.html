@@ -43,7 +43,7 @@
       let vault = JSON.parse(CryptoJS.AES.decrypt(storedVault, key).toString(CryptoJS.enc.Utf8));
   
       async function saveToServer(encryptedVault) {
-        await fetch('/api/vault', {
+        await fetch('/vault', {
           method: 'POST', headers: {'Content-Type':'application/json'},
           body: JSON.stringify({ username: user, encryptedVault })
         });

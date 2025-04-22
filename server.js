@@ -26,7 +26,7 @@ db.serialize(() => {
 });
 
 // Signup endpoint
-app.post('/api/signup', async (req, res) => {
+app.post('/signup', async (req, res) => {
   const { username, password, encryptedVault } = req.body;
   console.log(`[${new Date().toISOString()}] Signup attempt: user=${username}`);
   if (!username || !password || !encryptedVault) {
@@ -52,7 +52,7 @@ app.post('/api/signup', async (req, res) => {
 });
 
 // Login endpoint
-app.post('/api/login', async (req, res) => {
+app.post('/login', async (req, res) => {
   const { username, password } = req.body;
   console.log(`[${new Date().toISOString()}] Login attempt: user=${username}`);
   if (!username || !password) {
@@ -79,7 +79,7 @@ app.post('/api/login', async (req, res) => {
 });
 
 // Update vault endpoint
-app.post('/api/vault', (req, res) => {
+app.post('/vault', (req, res) => {
   const { username, encryptedVault } = req.body;
   console.log(`[${new Date().toISOString()}] Vault update attempt: user=${username}`);
   if (!username || !encryptedVault) {
