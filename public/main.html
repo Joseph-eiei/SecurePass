@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SecurePass - Vault</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  <style>
+
+    body { font-family: Arial, sans-serif; background: #f4f4f4; padding: 20px; }
+    .container { max-width: 600px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    input { padding: 8px; margin: 5px; }
+    button { padding: 8px 12px; margin: 5px; border: none; background: #4CAF50; color: #fff; border-radius: 4px; cursor: pointer; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { padding: 8px; border: 1px solid #ddd; text-align: left; } 
+    .pwd-toggle { margin-left: 8px; }
+    .logo { font-size: 1.8em; font-weight: bold; margin-bottom: 20px; }
+
+  </style>
+</head>
+<body>
+    <div class="container">
+      <div class="logo">SecurePass</div>
+      <h2>Your Vault</h2>
+      <form id="entry-form">
+        <input type="text" id="entry-name" placeholder="Entry Name" required>
+        <input type="text" id="entry-user" placeholder="Username" required>
+        <input type="password" id="entry-password" placeholder="Password" required>
+        <button type="submit">Add Entry</button>
+      </form>
+      <table id="vault-table">
+        <thead><tr><th>Name</th><th>Username</th><th>Password</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <button id="logout">Logout</button>
+    </div>
+    <script>
+      const user = sessionStorage.getItem('sp_user');
+      const key = sessionStorage.getItem('sp_key');
+      const storedVault = sessionStorage.getItem('sp_vault');
+      if (!user || !key || !storedVault) location.href = 'login.html';
+  
+      let vault = JSON.parse(CryptoJS.AES.decrypt(storedVault, key).toString(CryptoJS.enc.Utf8));
+  
+      async function saveToServer(encryptedVault) {
+        await fetch('/api/vault', {
+          method: 'POST', headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ username: user, encryptedVault })
+        });
+      }
+  
+      function render() {
+        const tbody = document.querySelector('#vault-table tbody');
+        tbody.innerHTML = '';
+        Object.entries(vault).forEach(([name, data]) => {
+          const decrypted = CryptoJS.AES.decrypt(data.password, key)
+                                 .toString(CryptoJS.enc.Utf8);
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${name}</td>
+            <td>${data.username}</td>
+            <td>
+              <div class="pwd-container">
+                <span class="pwd-mask">••••••••</span>
+                <button class="pwd-toggle">Show</button>
+              </div>
+            </td>
+          `;
+          const btn = tr.querySelector('.pwd-toggle');
+          const mask = tr.querySelector('.pwd-mask');
+          let visible = false;
+          btn.addEventListener('click', () => {
+            visible = !visible;
+            mask.textContent = visible ? decrypted : '••••••••';
+            btn.textContent = visible ? 'Hide' : 'Show';
+          });
+          tbody.appendChild(tr);
+        });
+      }
+  
+      document.getElementById('entry-form').addEventListener('submit', async e => {
+        e.preventDefault();
+        const name = document.getElementById('entry-name').value.trim();
+        const uname = document.getElementById('entry-user').value;
+        const pwd = document.getElementById('entry-password').value;
+        vault[name] = { username: uname, password: CryptoJS.AES.encrypt(pwd, key).toString() };
+        const encryptedVault = CryptoJS.AES.encrypt(JSON.stringify(vault), key).toString();
+        await saveToServer(encryptedVault);
+        sessionStorage.setItem('sp_vault', encryptedVault);
+        render();
+        e.target.reset();
+      });
+  
+      document.getElementById('logout').addEventListener('click', () => {
+        sessionStorage.clear();
+        location.href = 'login.html';
+      });
+  
+      render();
+    </script>
+ </body> 

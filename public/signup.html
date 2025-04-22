@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SecurePass - Signup</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  <style>
+    
+    body { font-family: Arial, sans-serif; background: #f4f4f4; display: flex; justify-content: center; align-items: center; height: 100vh; }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    .container {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    width: 300px;
+    }
+
+    button { background: #4CAF50; color: #fff }
+
+    .container input,
+    .container button {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    }
+    .error { color: red; font-size: 0.9em; }
+    .logo { font-size: 1.8em; font-weight: bold; margin-bottom: 20px; }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">SecurePass</div>
+    <h2>Signup</h2>
+    <form id="signup-form">
+      <input type="text" id="username" placeholder="Username" required>
+      <input type="password" id="password" placeholder="Password" required>
+      <input type="password" id="confirm-password" placeholder="Confirm Password" required>
+      <div id="error" class="error"></div>
+      <button type="submit">Create Account</button>
+    </form>
+    <p>Already have an account? <a href="login.html">Login</a></p>
+  </div>
+  <script>
+    document.getElementById('signup-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const u = document.getElementById('username').value.trim();
+      const p = document.getElementById('password').value;
+      const c = document.getElementById('confirm-password').value;
+      const errEl = document.getElementById('error');
+      if (!u || !p || !c) return errEl.textContent = 'All fields are required.';
+      if (p !== c) return errEl.textContent = 'Passwords do not match.';
+      const key = CryptoJS.SHA256(p).toString();
+      const emptyVault = CryptoJS.AES.encrypt(JSON.stringify({}), key).toString();
+      const res = await fetch('/api/signup', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ username: u, password: p, encryptedVault: emptyVault })
+      });
+      if (res.ok) window.location.href = 'login.html';
+      else errEl.textContent = (await res.json()).error;
+    });
+  </script>
+</body>
